@@ -3,12 +3,6 @@ package Reto2_web.repositorio;
 
 import Reto2_web.interfaces.InterfaceUser;
 import Reto2_web.modelo.User;
-
-/**
- *
- * @author FABIO ORTIZ
- */
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +10,9 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author USUARIO
+ * @author FABIO ORTIZ
  */
+
 @Repository
 public class UserRepository {
      @Autowired
@@ -52,6 +47,10 @@ public class UserRepository {
   
     public Optional<User> authenticateUser(String email, String password) {
         return userCrudRepository.findByEmailAndPassword(email, password);
+    }
+    
+    public Optional<User> lastUserId(){
+        return userCrudRepository.findTopByOrderByIdDesc();
     }
 }
 

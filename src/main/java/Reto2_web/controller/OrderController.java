@@ -1,4 +1,3 @@
-
 package Reto2_web.controller;
 
 import Reto2_web.modelo.Order;
@@ -58,9 +57,29 @@ public class OrderController {
         return orderService.delete(id);
     }
 
-    @GetMapping("/zona/{zone}")
-    public  List<Order> getOrdersByZone(@PathVariable("zone") String zone){
-        return orderService.getOrderByZone(zone);
+    @GetMapping("/zona/{zona}")
+    public List<Order> findByZone(@PathVariable("zona") String zona) {
+        return orderService.findByZone(zona);
+    }
+    
+    //Métodos del reto 4
+    //Reto 4: Ordenes de un asesor
+    @GetMapping("/salesman/{id}")
+    public List<Order> ordersSalesManByID(@PathVariable("id") Integer id){
+        return orderService.ordersSalesManByID(id);
+    }
+    
+    //Reto 4: Ordenes de un asesor x Estado
+    @GetMapping("/state/{state}/{id}")
+    public List<Order> ordersSalesManByState(@PathVariable("state") String state, @PathVariable("id") Integer id){
+        return orderService.ordersSalesManByState(state, id);
+    }
+    
+    //Reto 4: Ordenes de un asesor x fecha
+    @GetMapping("/date/{date}/{id}")
+    public List<Order> ordersSalesManByDate(@PathVariable("date") String dateStr, @PathVariable("id") Integer id) {
+        return orderService.ordersSalesManByDate(dateStr,id);
     }
 }
+
 

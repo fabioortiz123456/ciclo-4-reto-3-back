@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OrderService {
-    
-     @Autowired
+
+    @Autowired
     private OrderRepository orderRepository;
 
     public List<Order> getAll() {
@@ -25,44 +25,40 @@ public class OrderService {
         return orderRepository.getOrder(id);
     }
 
-  public Order create(Order order){
-        if (order.getId() == null){
-            return order;
-        } else {
+    public Order create(Order order) {
+
+        //obtiene el maximo id existente en la coleccion
+        Optional<Order> orderIdMaxima = orderRepository.lastUserId();
+
+        //si el id de la orden que se recibe como parametro es nulo, entonces valida el maximo id existente en base de datos
+        if (order.getId() == null) {
+            //valida el maximo id generado, si no hay ninguno aun el primer id sera 1
+            if (orderIdMaxima.isEmpty()) {
+                order.setId(1);
+            } //si retorna informacion suma 1 al maximo id existente y lo asigna como el codigo de la orden
+            else {
+                order.setId(orderIdMaxima.get().getId() + 1);
+            }
+        }
+
+        Optional<Order> e = orderRepository.getOrder(order.getId());
+        if (e.isEmpty()) {
             return orderRepository.create(order);
+        } else {
+            return order;
         }
     }
-  
- public Order update(Order order){
-        if (order.getId() != null){
-            Optional<Order> dbOrder = orderRepository.getOrder(order.getId());
-            if (!dbOrder.isEmpty()) {
 
-                if (order.getId() != null) {
-                    dbOrder.get().setId(order.getId());
-                }
+    public Order update(Order order) {
 
-                if (order.getRegisterDay() != null) {
-                    dbOrder.get().setRegisterDay(order.getRegisterDay());
-                }
-
+        if (order.getId() != null) {
+            Optional<Order> orderDb = orderRepository.getOrder(order.getId());
+            if (!orderDb.isEmpty()) {
                 if (order.getStatus() != null) {
-                    dbOrder.get().setStatus(order.getStatus());
+                    orderDb.get().setStatus(order.getStatus());
                 }
-
-                if (order.getSalesMan() != null) {
-                    dbOrder.get().setSalesMan(order.getSalesMan());
-                }
-
-                if (order.getProducts() != null) {
-                    dbOrder.get().setProducts(order.getProducts());
-                }
-
-                if (order.getQuantities() != null) {
-                    dbOrder.get().setQuantities(order.getQuantities());
-                }
-                orderRepository.update(dbOrder.get());
-                return dbOrder.get();
+                orderRepository.update(orderDb.get());
+                return orderDb.get();
             } else {
                 return order;
             }
@@ -71,16 +67,30 @@ public class OrderService {
         }
     }
 
-
-     public boolean delete(Integer id){
-        return getOrder(id).map(order -> {
+    public boolean delete(int id) {
+        Boolean aBoolean = getOrder(id).map(order -> {
             orderRepository.delete(order);
             return true;
         }).orElse(false);
-    }
-    
-    public List<Order> getOrderByZone(String zone){
-        return orderRepository.getOrderByZone(zone);
+        return aBoolean;
     }
 
+    //Ordenes de pedido asociadas a los asesores de una zona
+    public List<Order> findByZone(String zone) {
+        return orderRepository.findByZone(zone);
+    }
+    
+    //Métodos del reto 4
+    //Reto 4: Ordenes de un asesor
+    public List<Order> ordersSalesManByID(Integer id){
+        return orderRepository.ordersSalesManByID(id);
+    }
+    //Reto 4: Ordenes de un asesor x Estado
+    public List<Order> ordersSalesManByState(String state, Integer id){
+        return orderRepository.ordersSalesManByState(state, id);
+    }
+    //Reto 4: Ordenes de un asesor x fecha
+    public List<Order> ordersSalesManByDate(String dateStr, Integer id) {
+        return orderRepository.ordersSalesManByDate(dateStr,id);
+    }
 }
